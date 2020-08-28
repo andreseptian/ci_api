@@ -14,13 +14,18 @@ class UserController extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('user_model');
+
+		//====Allowing CORS
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Method: GET, PUT, POST, DELETE, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 	}
 
-	public function response($data)
+	public function response($data, $status = 200)
 	{
 		$this->output
 			->set_content_type('application/json')
-			->set_status_header(200)
+			->set_status_header($status)
 			->set_output(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
 			->_display();
 
@@ -77,7 +82,7 @@ class UserController extends CI_Controller
 			return $this->response([
 				'success' => false,
 				'message' => 'Gagal, error token'
-			]);
+			], 401);
 		}
 	}
 
@@ -98,7 +103,7 @@ class UserController extends CI_Controller
 
 	public function get_input()
 	{
-		return json_decode(file_get_contents('php:://input'));
+		return json_decode(file_get_contents('php://input'));
 	}
 
 	public function protected_method($id)
@@ -111,7 +116,7 @@ class UserController extends CI_Controller
 				return $this->response([
 					'success' => false,
 					'message' => 'User yang login berbeda'
-				]);
+				], 403);
 			}
 		}
 	}
